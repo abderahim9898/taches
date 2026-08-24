@@ -605,6 +605,37 @@ def delete_scheduled_date(url: str, key: str, row_id: str):
         print(f"⚠️ Error deleting scheduled date {row_id} from Supabase: {e}")
         return False
 
+def fetch_chef_ferme_name(url: str, key: str, default_name: str = "ABDELKABIR NADIF") -> str:
+    """Fetch dynamic Chef de Ferme name from Supabase table 'form_templates'."""
+    try:
+        # Check external Supabase first
+        res = requests.get(
+            f"{EXTERNAL_SUPABASE_URL}/rest/v1/form_templates?category=eq.CHEF_FERME_SETTING&select=payload",
+            headers={"apikey": EXTERNAL_SUPABASE_KEY, "Authorization": f"Bearer {EXTERNAL_SUPABASE_KEY}"}
+        )
+        if res.status_code == 200 and res.json():
+            payload = res.json()[0].get('payload', {})
+            chef_name = payload.get('chef_name')
+            if chef_name and str(chef_name).strip():
+                print(f"👨‍🌾 Dynamic Chef de Ferme fetched from Supabase: {chef_name}")
+                return str(chef_name).strip()
+
+        # Fallback to primary Supabase
+        res_prim = requests.get(
+            f"{url}/rest/v1/form_templates?category=eq.CHEF_FERME_SETTING&select=payload",
+            headers={"apikey": key, "Authorization": f"Bearer {key}"}
+        )
+        if res_prim.status_code == 200 and res_prim.json():
+            payload = res_prim.json()[0].get('payload', {})
+            chef_name = payload.get('chef_name')
+            if chef_name and str(chef_name).strip():
+                print(f"👨‍🌾 Dynamic Chef de Ferme fetched from Supabase: {chef_name}")
+                return str(chef_name).strip()
+    except Exception as e:
+        print(f"⚠️ Error fetching chef ferme setting from Supabase: {e}")
+        
+    return default_name
+
 def main():
     parser = argparse.ArgumentParser(description="Generate Fiche 3 'TRAVALE A LA TACHE' PDF and Send to Telegram.")
     parser.add_argument("--date", type=str, help="Target date in YYYY-MM-DD format (default: yesterday)")
@@ -628,6 +659,9 @@ def main():
                 print(f"  • Title: {c['title']} | Type: {c['type']} | Chat ID: {c['id']}")
         return
 
+    # Dynamic Chef de Ferme Name from Supabase
+    dynamic_chef = fetch_chef_ferme_name(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_KEY, default_name=args.chef)
+
     # Check if there are queued dates in Supabase table 'form_templates'
     if not args.date:
         queued_items, active_url, active_key = fetch_pending_scheduled_dates(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_KEY)
@@ -647,7 +681,8 @@ def main():
                     delete_scheduled_date(active_url, active_key, row_id)
                     continue
                     
-                create_attendance_pdf(groups_data, target_date, output_pdf, chef_ferme=args.chef)
+                create_attendance_pdf(groups_data, target_date, output_pdf, chef_ferme=dynamic_chef)
+
                 total_workers = sum(len(workers) for workers in groups_data.values())
                 caption = (
                     f"📋 *Fiche Travail à la Tâche - Ferme F20*\n"
@@ -700,7 +735,7 @@ def main():
         print("❌ No pointages data found to generate PDF.")
         sys.exit(1)
         
-    create_attendance_pdf(groups_data, target_date, output_pdf, chef_ferme=args.chef)
+    create_attendance_pdf(groups_data, target_date, output_pdf, chef_ferme=dynamic_chef)
     
     total_workers = sum(len(workers) for workers in groups_data.values())
     caption = (
