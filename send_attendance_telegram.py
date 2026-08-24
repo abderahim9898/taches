@@ -664,6 +664,11 @@ def main():
                     print("🧪 Dry-run mode active. Skipping Telegram upload and queue deletion.")
             print("\n🎉 All queued dates processed and cleared from Supabase!")
             return
+        else:
+            print("ℹ️ Aucun تاريخ مجدول في جدول Supabase. لا توجد تواريخ للمعالجة.")
+            return
+
+
 
     # Single date execution mode (command line argument or yesterday default)
     if args.date:
@@ -709,7 +714,7 @@ def main():
     if not args.dry_run:
         send_pdf_to_telegram(output_pdf, args.bot_token, args.chat_id, caption)
     else:
-        print(f"🧪 Dry-run mode active. PDF saved at '{output_path}' (Telegram send skipped).")
+        print(f"🧪 Dry-run mode active. PDF saved at '{output_pdf}' (Telegram send skipped).")
 
 if __name__ == "__main__":
     main()
