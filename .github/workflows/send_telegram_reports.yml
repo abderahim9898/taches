@@ -4,9 +4,6 @@ on:
   repository_dispatch:
     types: [trigger-telegram-reports]
   workflow_dispatch:
-  schedule:
-    # Optionnel: Exécution automatique tous les jours à 21h00 UTC
-    - cron: '0 21 * * *'
 
 jobs:
   run-report-script:
@@ -15,11 +12,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
