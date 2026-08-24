@@ -24,16 +24,16 @@ if sys.stdout.encoding != 'utf-8':
 load_dotenv()
 
 # Primary Supabase Database (Pointages & Groups)
-DEFAULT_SUPABASE_URL = os.getenv("VITE_SUPABASE_URL", "https://ektivlsvzpwmpvoxokrm.supabase.co")
-DEFAULT_SUPABASE_KEY = os.getenv("VITE_SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrdGl2bHN2enB3bXB2b3hva3JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTg3MzcsImV4cCI6MjA4OTE5NDczN30.P36Iyz46wq8fV5U9fRwceEb4Xi5YUegOljBRnCfQZt4")
+DEFAULT_SUPABASE_URL = os.getenv("VITE_SUPABASE_URL", "https://ektivlsvzpwmpvoxokrm.supabase.co").strip().strip("'").strip('"')
+DEFAULT_SUPABASE_KEY = os.getenv("VITE_SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrdGl2bHN2enB3bXB2b3hva3JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTg3MzcsImV4cCI6MjA4OTE5NDczN30.P36Iyz46wq8fV5U9fRwceEb4Xi5YUegOljBRnCfQZt4").strip().strip("'").strip('"')
 
 # External Supabase Database (Raw Biometric Device Punches & Real Timestamps)
-EXTERNAL_SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL", "https://qjzrdsvtjdjvnvpusbbi.supabase.co")
-EXTERNAL_SUPABASE_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_adEGsCZFyrnoiu7g-IZ6Gg_vowP7cPU")
+EXTERNAL_SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL", "https://qjzrdsvtjdjvnvpusbbi.supabase.co").strip().strip("'").strip('"')
+EXTERNAL_SUPABASE_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_adEGsCZFyrnoiu7g-IZ6Gg_vowP7cPU").strip().strip("'").strip('"')
 
 # Telegram Bot Credentials
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "7914915084:AAEwBo-1NKK8W2hol9Z9b-HCEBfUhmtEet8")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "-1002697037825")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "7914915084:AAEwBo-1NKK8W2hol9Z9b-HCEBfUhmtEet8").strip().strip("'").strip('"')
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "-1002697037825").strip().strip("'").strip('"')
 LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "public", "icon", "logo.jpeg"))
 
 # Embedded Base64 Logo Fallback (Guarantees Logo appears everywhere including GitHub Actions)
