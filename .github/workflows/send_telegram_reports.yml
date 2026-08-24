@@ -5,6 +5,9 @@ on:
     types: [trigger-telegram-reports]
   workflow_dispatch:
 
+env:
+  ACTIONS_SUPPRESS_DEPRECATION_WARNINGS: 'true'
+
 jobs:
   run-report-script:
     runs-on: ubuntu-latest
@@ -12,8 +15,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          sparse-checkout-cone-mode: false
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
