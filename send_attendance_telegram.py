@@ -606,35 +606,35 @@ def delete_scheduled_date(url: str, key: str, row_id: str):
         return False
 
 def fetch_chef_ferme_name(url: str, key: str, default_name: str = "ABDELKABIR NADIF") -> str:
-    """Fetch dynamic Chef de Ferme name from Supabase table 'form_templates'."""
+    """Fetch dynamic Chef de Ferme name from dedicated Supabase table 'chef_settings'."""
     try:
-        # Check external Supabase first
+        # 1. Check dedicated Supabase table 'chef_settings'
         res = requests.get(
-            f"{EXTERNAL_SUPABASE_URL}/rest/v1/form_templates?category=eq.CHEF_FERME_SETTING&select=payload",
+            f"{EXTERNAL_SUPABASE_URL}/rest/v1/chef_settings?select=chef_name&order=updated_at.desc&limit=1",
             headers={"apikey": EXTERNAL_SUPABASE_KEY, "Authorization": f"Bearer {EXTERNAL_SUPABASE_KEY}"}
         )
         if res.status_code == 200 and res.json():
-            payload = res.json()[0].get('payload', {})
-            chef_name = payload.get('chef_name')
-            if chef_name and str(chef_name).strip():
-                print(f"👨‍🌾 Dynamic Chef de Ferme fetched from Supabase: {chef_name}")
-                return str(chef_name).strip()
+            name_val = res.json()[0].get('chef_name')
+            if name_val and str(name_val).strip():
+                print(f"👨‍🌾 Dynamic Chef de Ferme fetched from chef_settings table: {name_val}")
+                return str(name_val).strip()
 
-        # Fallback to primary Supabase
-        res_prim = requests.get(
-            f"{url}/rest/v1/form_templates?category=eq.CHEF_FERME_SETTING&select=payload",
-            headers={"apikey": key, "Authorization": f"Bearer {key}"}
+        # 2. Fallback to form_templates setting
+        res_tmpl = requests.get(
+            f"{EXTERNAL_SUPABASE_URL}/rest/v1/form_templates?category=eq.CHEF_FERME_SETTING&select=payload",
+            headers={"apikey": EXTERNAL_SUPABASE_KEY, "Authorization": f"Bearer {EXTERNAL_SUPABASE_KEY}"}
         )
-        if res_prim.status_code == 200 and res_prim.json():
-            payload = res_prim.json()[0].get('payload', {})
+        if res_tmpl.status_code == 200 and res_tmpl.json():
+            payload = res_tmpl.json()[0].get('payload', {})
             chef_name = payload.get('chef_name')
             if chef_name and str(chef_name).strip():
-                print(f"👨‍🌾 Dynamic Chef de Ferme fetched from Supabase: {chef_name}")
+                print(f"👨‍🌾 Dynamic Chef de Ferme fetched from form_templates table: {chef_name}")
                 return str(chef_name).strip()
     except Exception as e:
         print(f"⚠️ Error fetching chef ferme setting from Supabase: {e}")
         
     return default_name
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generate Fiche 3 'TRAVALE A LA TACHE' PDF and Send to Telegram.")
