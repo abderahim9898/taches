@@ -355,6 +355,15 @@ def create_attendance_pdf(groups_data: dict, target_date: str, output_path: str,
                 sortie = group_majority_out
                 real_h = group_real_h
                 
+            # EXCLUDE FROM PDF any worker whose real working time is MORE THAN 8 HOURS.
+            # Workers with exactly 8.0 hours are kept.
+            if real_h > 7.5:
+                print(
+                    f"⚠️ Excluded from PDF: {w.get('name', '')} "
+                    f"({mat}) - TH RÉEL = {format_hours(real_h)}h > 8h"
+                )
+                continue
+
             processed_workers.append({
                 "matricule": mat,
                 "name": w.get("name", ""),
