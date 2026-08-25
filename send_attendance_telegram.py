@@ -355,6 +355,10 @@ def create_attendance_pdf(groups_data: dict, target_date: str, output_path: str,
                 sortie = group_majority_out
                 real_h = group_real_h
                 
+            # Exclude workers with real_hours (TH RÉEL) > 8.0
+            if real_h > 8.0:
+                continue
+
             processed_workers.append({
                 "matricule": mat,
                 "name": w.get("name", ""),
@@ -364,10 +368,15 @@ def create_attendance_pdf(groups_data: dict, target_date: str, output_path: str,
                 "task_hours": task_h
             })
             
+        if not processed_workers:
+            continue
+
+        total_workers = len(processed_workers)
         total_real_hours = sum(pw["real_hours"] for pw in processed_workers)
         total_task_hours = sum(pw["task_hours"] for pw in processed_workers)
         
         logo_img = get_logo_image()
+
             
         header_data = [
             [
